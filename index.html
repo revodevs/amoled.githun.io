@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=422, initial-scale=1.0">
@@ -14,7 +13,7 @@
             box-sizing: border-box;
             font-family: 'Poppins', sans-serif;
         }
-        
+
         body {
             background: linear-gradient(180deg, #1A1A1A 0%, #0A0F1A 100%);
             width: 422px;
@@ -26,7 +25,7 @@
             overflow: hidden;
             position: relative;
         }
-        
+
         .app-container {
             width: 100%;
             height: 100%;
@@ -35,7 +34,7 @@
             display: flex;
             flex-direction: column;
         }
-        
+
         .header {
             font-size: 18px;
             font-weight: 700;
@@ -46,13 +45,13 @@
             margin-bottom: 10px;
             animation: glow 2s infinite;
         }
-        
+
         .content {
             flex: 1;
             overflow-y: auto;
             padding-bottom: 60px;
         }
-        
+
         .tabs {
             position: absolute;
             bottom: 0;
@@ -61,12 +60,12 @@
             display: flex;
             justify-content: space-around;
             background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
             padding: 10px 0;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 -5px 15px rgba(0, 255, 166, 0.1);
         }
-        
+
         .tab {
             background: none;
             border: none;
@@ -78,13 +77,12 @@
             border-radius: 15px;
             position: relative;
         }
-        
-        .tab.active,
-        .tab:hover {
+
+        .tab.active, .tab:hover {
             color: #00FFA6;
             text-shadow: 0 0 10px rgba(0, 255, 166, 0.5);
         }
-        
+
         .tab.active::after {
             content: '';
             position: absolute;
@@ -97,16 +95,16 @@
             border-radius: 3px;
             box-shadow: 0 0 10px rgba(0, 255, 166, 0.5);
         }
-        
+
         .screen {
             display: none;
             animation: fadeIn 0.5s ease-in-out;
         }
-        
+
         .screen.active {
             display: block;
         }
-        
+
         .glass-card {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(15px);
@@ -117,29 +115,29 @@
             margin-bottom: 15px;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        
+
         .glass-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 0 30px rgba(0, 255, 166, 0.4);
         }
-        
+
         .current-email p {
             font-size: 14px;
             color: #FFFFFF;
         }
-        
+
         .current-email span {
             color: #00FFA6;
             text-shadow: 0 0 5px rgba(0, 255, 166, 0.5);
         }
-        
+
         .actions {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 10px;
             justify-items: center;
         }
-        
+
         button {
             background: rgba(255, 255, 255, 0.1);
             border: none;
@@ -154,29 +152,28 @@
             align-items: center;
             gap: 5px;
         }
-        
+
         button:hover {
             background: #00FFA6;
             color: #1A1A1A;
             box-shadow: 0 0 20px rgba(0, 255, 166, 0.5);
             transform: scale(1.05);
         }
-        
+
         .email {
             color: #00FFA6;
             font-size: 12px;
             margin: 5px 0;
             text-shadow: 0 0 5px rgba(0, 255, 166, 0.5);
         }
-        
+
         form {
             display: flex;
             flex-direction: column;
             gap: 8px;
         }
-        
-        input,
-        textarea {
+
+        input, textarea {
             background: rgba(255, 255, 255, 0.05);
             border: none;
             padding: 8px;
@@ -186,18 +183,17 @@
             outline: none;
             transition: all 0.3s ease;
         }
-        
-        input:focus,
-        textarea:focus {
+
+        input:focus, textarea:focus {
             background: rgba(255, 255, 255, 0.1);
             box-shadow: 0 0 10px rgba(0, 255, 166, 0.5);
         }
-        
+
         textarea {
             resize: none;
             height: 80px;
         }
-        
+
         .email-item {
             background: rgba(255, 255, 255, 0.05);
             padding: 8px;
@@ -205,17 +201,17 @@
             margin: 8px 0;
             transition: transform 0.3s ease;
         }
-        
+
         .email-item:hover {
             transform: translateX(5px);
         }
-        
+
         .email-item p {
             font-size: 12px;
             color: #00FFA6;
             text-shadow: 0 0 5px rgba(0, 255, 166, 0.5);
         }
-        
+
         .update-item {
             background: rgba(255, 255, 255, 0.05);
             padding: 8px;
@@ -223,99 +219,72 @@
             margin: 8px 0;
             transition: transform 0.3s ease;
         }
-        
+
         .update-item:hover {
             transform: translateX(5px);
         }
-        
+
         .update-item h3 {
             font-size: 14px;
             color: #FFFFFF;
         }
-        
+
         .update-item p {
             font-size: 12px;
             color: #00FFA6;
             text-shadow: 0 0 5px rgba(0, 255, 166, 0.5);
         }
-        
+
         .profile-content {
             display: flex;
             gap: 15px;
         }
-        
-        .profile-left,
-        .profile-right {
+
+        .profile-left, .profile-right {
             flex: 1;
         }
-        
-        .profile-left h2,
-        .profile-right h2 {
+
+        .profile-left h2, .profile-right h2 {
             font-size: 16px;
             font-weight: 500;
             color: #FFFFFF;
             margin-bottom: 8px;
         }
-        
+
         .subscription-status {
             font-size: 14px;
             color: #FFFFFF;
             margin-top: 15px;
         }
-        
+
         .subscription-status span {
             color: #FF5555;
             text-shadow: 0 0 5px rgba(255, 85, 85, 0.5);
         }
-        
+
         .stats {
             display: flex;
             gap: 15px;
             align-items: center;
             margin-bottom: 15px;
         }
-        
-        .circle {
+
+        #three-canvas {
             width: 80px;
             height: 80px;
-            border: 4px solid #00FFA6;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 0 15px rgba(0, 255, 166, 0.5);
-            position: relative;
-            overflow: hidden;
         }
-        
-        .circle::before {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(0, 255, 166, 0.2) 0%, transparent 70%);
-            animation: rotate 5s linear infinite;
-        }
-        
-        .circle p {
-            font-size: 12px;
-            font-weight: 700;
-            color: #00FFA6;
-            text-shadow: 0 0 5px rgba(0, 255, 166, 0.5);
-            z-index: 1;
-        }
-        
+
         .bars {
             display: flex;
             gap: 8px;
         }
-        
+
         .bar {
             display: flex;
             flex-direction: column;
             align-items: center;
         }
-        
+
         .bar-fill {
             width: 15px;
             background: #00FFA6;
@@ -325,7 +294,7 @@
             position: relative;
             overflow: hidden;
         }
-        
+
         .bar-fill::before {
             content: '';
             position: absolute;
@@ -335,7 +304,7 @@
             background-size: 20px 20px;
             animation: move 2s linear infinite;
         }
-        
+
         .bar p {
             font-size: 12px;
             font-weight: 700;
@@ -343,7 +312,7 @@
             text-shadow: 0 0 5px rgba(0, 255, 166, 0.5);
             margin-top: 5px;
         }
-        
+
         .progress-bar {
             width: 150px;
             height: 15px;
@@ -352,7 +321,7 @@
             overflow: hidden;
             position: relative;
         }
-        
+
         .progress-fill {
             height: 100%;
             background: #00FFA6;
@@ -361,7 +330,7 @@
             position: relative;
             overflow: hidden;
         }
-        
+
         .progress-fill::before {
             content: '';
             position: absolute;
@@ -371,85 +340,84 @@
             background-size: 20px 20px;
             animation: move 2s linear infinite;
         }
-        
+
+        .settings {
+            margin-top: 15px;
+        }
+
+        .settings label {
+            font-size: 14px;
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .settings input[type="checkbox"] {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .settings input[type="checkbox"]:checked {
+            background: #00FFA6;
+        }
+
+        .settings input[type="checkbox"]:checked::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            color: #1A1A1A;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        
+
         @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
         }
-        
+
         @keyframes pulse {
-            0% {
-                box-shadow: 0 0 10px rgba(0, 255, 166, 0.5);
-            }
-            50% {
-                box-shadow: 0 0 20px rgba(0, 255, 166, 0.8);
-            }
-            100% {
-                box-shadow: 0 0 10px rgba(0, 255, 166, 0.5);
-            }
+            0% { box-shadow: 0 0 10px rgba(0, 255, 166, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(0, 255, 166, 0.8); }
+            100% { box-shadow: 0 0 10px rgba(0, 255, 166, 0.5); }
         }
-        
+
         @keyframes rotate {
-            from {
-                transform: rotate(0deg);
-            }
-            to {
-                transform: rotate(360deg);
-            }
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
-        
+
         @keyframes move {
-            from {
-                background-position: 0 0;
-            }
-            to {
-                background-position: 20px 20px;
-            }
+            from { background-position: 0 0; }
+            to { background-position: 20px 20px; }
         }
-        
+
         @keyframes glow {
-            0% {
-                text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-            }
-            50% {
-                text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
-            }
-            100% {
-                text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-            }
+            0% { text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
+            50% { text-shadow: 0 0 20px rgba(255, 255, 255, 0.8); }
+            100% { text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
         }
-        
-        button,
-        .circle,
-        .bar-fill,
-        .progress-fill,
-        .tab {
+
+        button, .bar-fill, .progress-fill, .tab {
             animation: pulse 2s infinite;
         }
-        
-        .email,
-        .email-item,
-        .update-item {
+
+        .email, .email-item, .update-item {
             animation: slideIn 0.5s ease-in-out;
         }
-        
+
         canvas {
             position: absolute;
             top: 0;
@@ -459,7 +427,6 @@
         }
     </style>
 </head>
-
 <body>
     <canvas id="particles"></canvas>
     <div class="app-container">
@@ -511,9 +478,7 @@
                     <div class="profile-right">
                         <h2>Статистика:</h2>
                         <div class="stats">
-                            <div class="circle">
-                                <p id="emails-created">***0***</p>
-                            </div>
+                            <canvas id="three-canvas"></canvas>
                             <div class="bars">
                                 <div class="bar">
                                     <div id="bar-sent" class="bar-fill"></div>
@@ -529,6 +494,12 @@
                         <div class="progress-bar">
                             <div id="progress-fill" class="progress-fill"></div>
                         </div>
+                        <div class="settings">
+                            <label>
+                                <input type="checkbox" id="notify-toggle" onchange="updateNotify()">
+                                Уведомления
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -542,75 +513,66 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
     <script>
         // Инициализация частиц на фоне
         particlesJS('particles', {
             particles: {
-                number: {
-                    value: 50,
-                    density: {
-                        enable: true,
-                        value_area: 800
-                    }
-                },
-                color: {
-                    value: '#00FFA6'
-                },
-                shape: {
-                    type: 'circle'
-                },
-                opacity: {
-                    value: 0.5,
-                    random: true
-                },
-                size: {
-                    value: 3,
-                    random: true
-                },
-                line_linked: {
-                    enable: false
-                },
-                move: {
-                    enable: true,
-                    speed: 1,
-                    direction: 'top',
-                    random: true,
-                    out_mode: 'out'
-                }
+                number: { value: 50, density: { enable: true, value_area: 800 } },
+                color: { value: '#00FFA6' },
+                shape: { type: 'circle' },
+                opacity: { value: 0.5, random: true },
+                size: { value: 3, random: true },
+                line_linked: { enable: false },
+                move: { enable: true, speed: 1, direction: 'top', random: true, out_mode: 'out' }
             },
             interactivity: {
                 detect_on: 'canvas',
-                events: {
-                    onhover: {
-                        enable: true,
-                        mode: 'repulse'
-                    },
-                    onclick: {
-                        enable: true,
-                        mode: 'push'
-                    }
-                },
-                modes: {
-                    repulse: {
-                        distance: 100,
-                        duration: 0.4
-                    },
-                    push: {
-                        particles_nb: 4
-                    }
-                }
+                events: { onhover: { enable: true, mode: 'repulse' }, onclick: { enable: true, mode: 'push' } },
+                modes: { repulse: { distance: 100, duration: 0.4 }, push: { particles_nb: 4 } }
             },
             retina_detect: true
         });
 
+        // Инициализация Three.js
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('three-canvas'), alpha: true });
+        renderer.setSize(80, 80);
+
+        const geometry = new THREE.BoxGeometry();
+        const material = new THREE.MeshBasicMaterial({ color: 0x00FFA6, wireframe: true });
+        const cube = new THREE.Mesh(geometry, material);
+        scene.add(cube);
+
+        camera.position.z = 2;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            cube.rotation.x += 0.01;
+            cube.rotation.y += 0.01;
+            renderer.render(scene, camera);
+        }
+        animate();
+
         let telegramId = '12345';
+        let csrfToken = '';
 
         // Инициализация Telegram Web App
         if (window.Telegram) {
             Telegram.WebApp.ready();
-            telegramId = Telegram.WebApp.initDataUnsafe.user ? id || '12345' :
-                Telegram.WebApp.expand();
+            telegramId = Telegram.WebApp.initDataUnsafe.user?.id || '12345';
+            Telegram.WebApp.expand();
             Telegram.WebApp.setHeaderColor('#1A1A1A');
+        }
+
+        // Получение CSRF-токена
+        async function getCsrfToken() {
+            const response = await fetch('http://localhost:3000/csrf-token', {
+                credentials: 'include'
+            });
+            const data = await response.json();
+            csrfToken = data.csrfToken;
         }
 
         // Переключение вкладок
@@ -631,12 +593,7 @@
                 return await response.json();
             } catch (error) {
                 console.error('Ошибка загрузки данных пользователя:', error);
-                return {
-                    currentEmail: null,
-                    emailsCreated: 0,
-                    emailsSent: 0,
-                    lastEmails: []
-                };
+                return { currentEmail: null, emailsCreated: 0, emailsSent: 0, lastEmails: [], notify: false };
             }
         }
 
@@ -667,18 +624,15 @@
         async function newEmail() {
             try {
                 const response = await fetch(`http://localhost:3000/user/${telegramId}/new-email`, {
-                    method: 'POST'
+                    method: 'POST',
+                    headers: { 'CSRF-Token': csrfToken }
                 });
                 const data = await response.json();
                 document.getElementById('current-email').textContent = data.email;
                 await fetch(`http://localhost:3000/notify/${telegramId}`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        message: `✨ Новая почта создана: ${data.email}`
-                    })
+                    headers: { 'Content-Type': 'application/json', 'CSRF-Token': csrfToken },
+                    body: JSON.stringify({ message: `✨ Новая почта создана: ${data.email}` })
                 });
             } catch (error) {
                 console.error('Ошибка создания новой почты:', error);
@@ -689,17 +643,14 @@
         async function deleteEmail() {
             try {
                 await fetch(`http://localhost:3000/user/${telegramId}/delete-email`, {
-                    method: 'POST'
+                    method: 'POST',
+                    headers: { 'CSRF-Token': csrfToken }
                 });
                 document.getElementById('current-email').textContent = 'Нет активной почты';
                 await fetch(`http://localhost:3000/notify/${telegramId}`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        message: '🗑 Почта удалена.'
-                    })
+                    headers: { 'Content-Type': 'application/json', 'CSRF-Token': csrfToken },
+                    body: JSON.stringify({ message: '🗑 Почта удалена.' })
                 });
             } catch (error) {
                 console.error('Ошибка удаления почты:', error);
@@ -721,24 +672,14 @@
                 const body = document.getElementById('email-body').value;
                 await fetch(`http://localhost:3000/user/${telegramId}/send-email`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        to,
-                        subject,
-                        body
-                    })
+                    headers: { 'Content-Type': 'application/json', 'CSRF-Token': csrfToken },
+                    body: JSON.stringify({ to, subject, body })
                 });
                 document.getElementById('send-email-form').style.display = 'none';
                 await fetch(`http://localhost:3000/notify/${telegramId}`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        message: `✉️ Письмо отправлено на ${to}`
-                    })
+                    headers: { 'Content-Type': 'application/json', 'CSRF-Token': csrfToken },
+                    body: JSON.stringify({ message: `✉️ Письмо отправлено на ${to}` })
                 });
             } catch (error) {
                 console.error('Ошибка отправки письма:', error);
@@ -772,14 +713,28 @@
                 document.getElementById('last-emails').innerHTML = (user.lastEmails || []).map(email => `
                     <p class="email">${email}</p>
                 `).join('');
-                document.getElementById('emails-created').textContent = `***${user.emailsCreated || 0}***`;
                 document.getElementById('emails-sent').textContent = `***${user.emailsSent || 0}***`;
                 document.getElementById('emails-created-bar').textContent = `***${user.emailsCreated || 0}***`;
                 document.getElementById('bar-sent').style.height = `${(user.emailsSent || 0) * 10}%`;
                 document.getElementById('bar-created').style.height = `${(user.emailsCreated || 0) * 10}%`;
                 document.getElementById('progress-fill').style.width = `${Math.min((user.emailsSent || 0) + (user.emailsCreated || 0), 100)}%`;
+                document.getElementById('notify-toggle').checked = user.notify;
             } catch (error) {
                 console.error('Ошибка загрузки профиля:', error);
+            }
+        }
+
+        // Обновление настроек уведомлений
+        async function updateNotify() {
+            try {
+                const notify = document.getElementById('notify-toggle').checked;
+                await fetch(`http://localhost:3000/user/${telegramId}/update-notify`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'CSRF-Token': csrfToken },
+                    body: JSON.stringify({ notify })
+                });
+            } catch (error) {
+                console.error('Ошибка обновления настроек уведомлений:', error);
             }
         }
 
@@ -787,5 +742,4 @@
         loadUpdates();
     </script>
 </body>
-
 </html>
