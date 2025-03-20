@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=422, initial-scale=1.0">
+    <title>AnonMail MiniApp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(180deg, #1A1A1A 0%, #0A0F1A 100%);
+            width: 422px;
+            height: 625px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #FFFFFF;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .app-container {
+            width: 100%;
+            height: 100%;
+            padding: 15px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            font-size: 18px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #FFFFFF;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            text-align: center;
+            margin-bottom: 10px;
+            animation: glow 2s infinite;
+        }
+        
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 60px;
+        }
+        
+        .tabs {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 10px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 -5px 15px rgba(0, 255, 166, 0.1);
+        }
+        
+        .tab {
+            background: none;
+            border: none;
+            color: #FFFFFF;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 5px 15px;
+            border-radius: 15px;
+            position: relative;
+        }
+        
+        .tab.active,
+        .tab:hover {
+            color: #00FFA6;
+            text-shadow: 0 0 10px rgba(0, 255, 166, 0.5);
+        }
+        
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 3px;
+            background: #00FFA6;
+            border-radius: 3px;
+            box-shadow: 0 0 10px rgba(0, 255, 166, 0.5);
+        }
+        
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 0 20px rgba(0, 255, 166, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 15px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 30px rgba(0, 255, 166, 0.4);
+        }
+        
+        .current-email p {
+            font-size: 14px;
+            color: #FFFFFF;
+        }
+        
+        .current-email span {
+            color: #00FFA6;
+            text-shadow: 0 0 5px rgba(0, 255, 166, 0.5);
+        }
+        
+        .actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            justify-items: center;
+        }
+        
+        button {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            padding: 10px;
+            border-radius: 15px;
+            color: #FFFFFF;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 255, 166, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        button:hover {
+            background: #00FFA6;
+            color: #1A1A1A;
+            box-shadow: 0 0 20px rgba(0, 255, 166, 0.5);
+            transform: scale(1.05);
+        }
+        
+        .email {
+            color: #00FFA6;
+            font-size: 12px;
+            margin: 5px 0;
+            text-shadow: 0 0 5px rgba(0, 255, 166, 0.5);
+        }
+        
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        input,
+        textarea {
+            background: rgba(255, 255, 255, 0.05);
+            border: none;
+            padding: 8px;
+            border-radius: 10px;
+            color: #FFFFFF;
+            font-size: 12px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus,
+        textarea:focus {
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 10px rgba(0, 255, 166, 0.5);
+        }
+        
+        textarea {
+            resize: none;
+            height: 80px;
+        }
+        
+        .email-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px;
+            border-radius: 10px;
+            margin: 8px 0;
+            transition: transform 0.3s ease;
+        }
+        
+        .email-item:hover {
+            transform: translateX(5px);
+        }
+        
+        .email-item p {
+            font-size: 12px;
+            color: #00FFA6;
+            text-shadow: 0 0 5px rgba(0, 255, 166, 0.5);
+        }
+        
+        .update-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px;
+            border-radius: 10px;
+            margin: 8px 0;
+            transition: transform 0.3s ease;
+        }
+        
+        .update-item:hover {
+            transform: translateX(5px);
+        }
+        
+        .update-item h3 {
+            font-size: 14px;
+            color: #FFFFFF;
+        }
+        
+        .update-item p {
+            font-size: 12px;
+            color: #00FFA6;
+            text-shadow: 0 0 5px rgba(0, 255, 166, 0.5);
+        }
+        
+        .profile-content {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .profile-left,
+        .profile-right {
+            flex: 1;
+        }
+        
+        .profile-left h2,
+        .profile-right h2 {
+            font-size: 16px;
+            font-weight: 500;
+            color: #FFFFFF;
+            margin-bottom: 8px;
+        }
+        
+        .subscription-status {
+            font-size: 14px;
+            color: #FFFFFF;
+            margin-top: 15px;
+        }
+        
+        .subscription-status span {
+            color: #FF5555;
+            text-shadow: 0 0 5px rgba(255, 85, 85, 0.5);
+        }
+        
+        .stats {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .circle {
+            width: 80px;
+            height: 80px;
+            border: 4px solid #00FFA6;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 15px rgba(0, 255, 166, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .circle::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(0, 255, 166, 0.2) 0%, transparent 70%);
+            animation: rotate 5s linear infinite;
+        }
+        
+        .circle p {
+            font-size: 12px;
+            font-weight: 700;
+            color: #00FFA6;
+            text-shadow: 0 0 5px rgba(0, 255, 166, 0.5);
+            z-index: 1;
+        }
+        
+        .bars {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .bar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .bar-fill {
+            width: 15px;
+            background: #00FFA6;
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 0 8px rgba(0, 255, 166, 0.5);
+            transition: height 1s ease-in-out;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .bar-fill::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255, 255, 255, 0.2) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.2) 75%, transparent 75%, transparent);
+            background-size: 20px 20px;
+            animation: move 2s linear infinite;
+        }
+        
+        .bar p {
+            font-size: 12px;
+            font-weight: 700;
+            color: #00FFA6;
+            text-shadow: 0 0 5px rgba(0, 255, 166, 0.5);
+            margin-top: 5px;
+        }
+        
+        .progress-bar {
+            width: 150px;
+            height: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #00FFA6;
+            box-shadow: 0 0 8px rgba(0, 255, 166, 0.5);
+            transition: width 1s ease-in-out;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-fill::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255, 255, 255, 0.2) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.2) 75%, transparent 75%, transparent);
+            background-size: 20px 20px;
+            animation: move 2s linear infinite;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 10px rgba(0, 255, 166, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(0, 255, 166, 0.8);
+            }
+            100% {
+                box-shadow: 0 0 10px rgba(0, 255, 166, 0.5);
+            }
+        }
+        
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        @keyframes move {
+            from {
+                background-position: 0 0;
+            }
+            to {
+                background-position: 20px 20px;
+            }
+        }
+        
+        @keyframes glow {
+            0% {
+                text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            }
+            50% {
+                text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+            }
+            100% {
+                text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            }
+        }
+        
+        button,
+        .circle,
+        .bar-fill,
+        .progress-fill,
+        .tab {
+            animation: pulse 2s infinite;
+        }
+        
+        .email,
+        .email-item,
+        .update-item {
+            animation: slideIn 0.5s ease-in-out;
+        }
+        
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="particles"></canvas>
+    <div class="app-container">
+        <h1 class="header">AMOLED | ANONMAIL | @USERNAME</h1>
+        <div class="content">
+            <!-- Вкладка "Обновления" -->
+            <div id="updates-tab" class="screen active">
+                <div class="glass-card">
+                    <h2>Обновления</h2>
+                    <div id="updates-list"></div>
+                </div>
+            </div>
+
+            <!-- Вкладка "Управление почтой" -->
+            <div id="email-tab" class="screen">
+                <div class="glass-card">
+                    <div class="current-email">
+                        <p>Текущая почта: <span id="current-email"></span></p>
+                    </div>
+                    <div class="actions">
+                        <button onclick="newEmail()"><i class="fas fa-plus"></i> Новая почта</button>
+                        <button onclick="deleteEmail()"><i class="fas fa-trash"></i> Удалить</button>
+                        <button onclick="showSendEmailForm()"><i class="fas fa-paper-plane"></i> Отправить</button>
+                        <button onclick="checkInbox()"><i class="fas fa-inbox"></i> Входящие</button>
+                    </div>
+                </div>
+                <div id="send-email-form" class="glass-card" style="display: none;">
+                    <form onsubmit="sendEmail(event)">
+                        <input type="email" id="email-to" placeholder="Кому (to@example.com)" required>
+                        <input type="text" id="email-subject" placeholder="Тема" required>
+                        <textarea id="email-body" placeholder="Текст письма" required></textarea>
+                        <button type="submit"><i class="fas fa-paper-plane"></i> Отправить</button>
+                    </form>
+                </div>
+                <div id="inbox" class="glass-card" style="display: none;">
+                    <h2>Входящие:</h2>
+                    <div id="inbox-list"></div>
+                </div>
+            </div>
+
+            <!-- Вкладка "Профиль" -->
+            <div id="profile-tab" class="screen">
+                <div class="glass-card profile-content">
+                    <div class="profile-left">
+                        <h2>Последние почты:</h2>
+                        <div id="last-emails" class="email-list"></div>
+                        <p class="subscription-status">Платная подписка: <span>нет</span></p>
+                    </div>
+                    <div class="profile-right">
+                        <h2>Статистика:</h2>
+                        <div class="stats">
+                            <div class="circle">
+                                <p id="emails-created">***0***</p>
+                            </div>
+                            <div class="bars">
+                                <div class="bar">
+                                    <div id="bar-sent" class="bar-fill"></div>
+                                    <p id="emails-sent">***0***</p>
+                                </div>
+                                <div class="bar">
+                                    <div id="bar-created" class="bar-fill"></div>
+                                    <p id="emails-created-bar">***0***</p>
+                                </div>
+                            </div>
+                        </div>
+                        <h2>Активность:</h2>
+                        <div class="progress-bar">
+                            <div id="progress-fill" class="progress-fill"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('updates-tab')"><i class="fas fa-bullhorn"></i></button>
+            <button class="tab" onclick="showTab('email-tab')"><i class="fas fa-envelope"></i></button>
+            <button class="tab" onclick="showTab('profile-tab')"><i class="fas fa-user"></i></button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script>
+        // Инициализация частиц на фоне
+        particlesJS('particles', {
+            particles: {
+                number: {
+                    value: 50,
+                    density: {
+                        enable: true,
+                        value_area: 800
+                    }
+                },
+                color: {
+                    value: '#00FFA6'
+                },
+                shape: {
+                    type: 'circle'
+                },
+                opacity: {
+                    value: 0.5,
+                    random: true
+                },
+                size: {
+                    value: 3,
+                    random: true
+                },
+                line_linked: {
+                    enable: false
+                },
+                move: {
+                    enable: true,
+                    speed: 1,
+                    direction: 'top',
+                    random: true,
+                    out_mode: 'out'
+                }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: {
+                    onhover: {
+                        enable: true,
+                        mode: 'repulse'
+                    },
+                    onclick: {
+                        enable: true,
+                        mode: 'push'
+                    }
+                },
+                modes: {
+                    repulse: {
+                        distance: 100,
+                        duration: 0.4
+                    },
+                    push: {
+                        particles_nb: 4
+                    }
+                }
+            },
+            retina_detect: true
+        });
+
+        let telegramId = '12345';
+
+        // Инициализация Telegram Web App
+        if (window.Telegram) {
+            Telegram.WebApp.ready();
+            telegramId = Telegram.WebApp.initDataUnsafe.user ? id || '12345' :
+                Telegram.WebApp.expand();
+            Telegram.WebApp.setHeaderColor('#1A1A1A');
+        }
+
+        // Переключение вкладок
+        function showTab(tabId) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
+            document.querySelector(`button[onclick="showTab('${tabId}')"]`).classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+            if (tabId === 'updates-tab') loadUpdates();
+            if (tabId === 'email-tab') loadEmailData();
+            if (tabId === 'profile-tab') loadProfileData();
+        }
+
+        // Загрузка данных пользователя
+        async function loadUserData() {
+            try {
+                const response = await fetch(`http://localhost:3000/user/${telegramId}`);
+                return await response.json();
+            } catch (error) {
+                console.error('Ошибка загрузки данных пользователя:', error);
+                return {
+                    currentEmail: null,
+                    emailsCreated: 0,
+                    emailsSent: 0,
+                    lastEmails: []
+                };
+            }
+        }
+
+        // Загрузка обновлений
+        async function loadUpdates() {
+            try {
+                const response = await fetch(`http://localhost:3000/updates`);
+                const updates = await response.json();
+                const updatesList = document.getElementById('updates-list');
+                updatesList.innerHTML = updates.map(update => `
+                    <div class="update-item">
+                        <h3>${update.title}</h3>
+                        <p>${update.content}</p>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Ошибка загрузки обновлений:', error);
+            }
+        }
+
+        // Загрузка данных почты
+        async function loadEmailData() {
+            const user = await loadUserData();
+            document.getElementById('current-email').textContent = user.currentEmail || 'Нет активной почты';
+        }
+
+        // Создание новой почты
+        async function newEmail() {
+            try {
+                const response = await fetch(`http://localhost:3000/user/${telegramId}/new-email`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                document.getElementById('current-email').textContent = data.email;
+                await fetch(`http://localhost:3000/notify/${telegramId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: `✨ Новая почта создана: ${data.email}`
+                    })
+                });
+            } catch (error) {
+                console.error('Ошибка создания новой почты:', error);
+            }
+        }
+
+        // Удаление почты
+        async function deleteEmail() {
+            try {
+                await fetch(`http://localhost:3000/user/${telegramId}/delete-email`, {
+                    method: 'POST'
+                });
+                document.getElementById('current-email').textContent = 'Нет активной почты';
+                await fetch(`http://localhost:3000/notify/${telegramId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: '🗑 Почта удалена.'
+                    })
+                });
+            } catch (error) {
+                console.error('Ошибка удаления почты:', error);
+            }
+        }
+
+        // Показ формы отправки письма
+        function showSendEmailForm() {
+            document.getElementById('send-email-form').style.display = 'block';
+            document.getElementById('inbox').style.display = 'none';
+        }
+
+        // Отправка письма
+        async function sendEmail(event) {
+            event.preventDefault();
+            try {
+                const to = document.getElementById('email-to').value;
+                const subject = document.getElementById('email-subject').value;
+                const body = document.getElementById('email-body').value;
+                await fetch(`http://localhost:3000/user/${telegramId}/send-email`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        to,
+                        subject,
+                        body
+                    })
+                });
+                document.getElementById('send-email-form').style.display = 'none';
+                await fetch(`http://localhost:3000/notify/${telegramId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: `✉️ Письмо отправлено на ${to}`
+                    })
+                });
+            } catch (error) {
+                console.error('Ошибка отправки письма:', error);
+            }
+        }
+
+        // Проверка входящих
+        async function checkInbox() {
+            try {
+                const response = await fetch(`http://localhost:3000/user/${telegramId}/inbox`);
+                const inbox = await response.json();
+                const inboxList = document.getElementById('inbox-list');
+                inboxList.innerHTML = inbox.map(item => `
+                    <div class="email-item">
+                        <p>От: ${item.sender}</p>
+                        <p>Тема: ${item.subject}</p>
+                        <p>Текст: ${item.body}</p>
+                    </div>
+                `).join('');
+                document.getElementById('inbox').style.display = 'block';
+                document.getElementById('send-email-form').style.display = 'none';
+            } catch (error) {
+                console.error('Ошибка проверки входящих:', error);
+            }
+        }
+
+        // Загрузка профиля
+        async function loadProfileData() {
+            try {
+                const user = await loadUserData();
+                document.getElementById('last-emails').innerHTML = (user.lastEmails || []).map(email => `
+                    <p class="email">${email}</p>
+                `).join('');
+                document.getElementById('emails-created').textContent = `***${user.emailsCreated || 0}***`;
+                document.getElementById('emails-sent').textContent = `***${user.emailsSent || 0}***`;
+                document.getElementById('emails-created-bar').textContent = `***${user.emailsCreated || 0}***`;
+                document.getElementById('bar-sent').style.height = `${(user.emailsSent || 0) * 10}%`;
+                document.getElementById('bar-created').style.height = `${(user.emailsCreated || 0) * 10}%`;
+                document.getElementById('progress-fill').style.width = `${Math.min((user.emailsSent || 0) + (user.emailsCreated || 0), 100)}%`;
+            } catch (error) {
+                console.error('Ошибка загрузки профиля:', error);
+            }
+        }
+
+        // Инициализация
+        loadUpdates();
+    </script>
+</body>
+
+</html>
