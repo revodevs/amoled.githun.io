@@ -1,756 +1,288 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=422, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AnonMail MiniApp</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Фоторедактор</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
-
-        html, body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background: linear-gradient(180deg, #1A1A1A 0%, #0A0F1A 100%);
-            color: #FFFFFF;
-            position: fixed;
-            top: 0;
-            left: 0;
+        .loader {
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
         }
-
-        .app-container {
-            width: 100%;
-            height: 100%;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
-
-        .header {
-            font-size: 18px;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: #FFFFFF;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-            text-align: center;
-            margin-bottom: 10px;
-            animation: glow 2s infinite;
+        .upload-container {
+            border: 2px dashed #4b5563;
+            transition: border-color 0.3s, background-color 0.3s;
         }
-
-        .content {
-            flex: 1;
-            overflow-y: auto;
-            padding-bottom: 60px;
-            -webkit-overflow-scrolling: touch;
+        .upload-container.drag-over {
+            border-color: #3b82f6;
+            background-color: #1f2937;
         }
-
-        .tabs {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: space-around;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(15px);
-            padding: 10px 0;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 -5px 15px rgba(0, 255, 166, 0.1);
+        textarea:focus {
+            box-shadow: 0 0 0 2px #3b82f6;
+            border-color: #3b82f6;
         }
-
-        .tab {
-            background: none;
-            border: none;
-            color: #FFFFFF;
-            font-size: 24px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            padding: 5px 15px;
-            border-radius: 15px;
-            position: relative;
+        /* Mobile-first adjustments */
+        @media (max-width: 1023px) {
+            .main-container {
+                flex-direction: column;
+                max-width: 100%;
+            }
         }
-
-        .tab.active, .tab:hover {
-            color: #00FFA6;
-            text-shadow: 0 0 10px rgba(0, 255, 166, 0.5);
-        }
-
-        .tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 30px;
-            height: 3px;
-            background: #00FFA6;
-            border-radius: 3px;
-            box-shadow: 0 0 10px rgba(0, 255, 166, 0.5);
-        }
-
-        .screen {
-            display: none;
-            animation: fadeIn 0.5s ease-in-out;
-        }
-
-        .screen.active {
-            display: block;
-        }
-
-        .glass-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
-            padding: 15px;
-            box-shadow: 0 0 20px rgba(0, 255, 166, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            margin-bottom: 15px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .glass-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 0 30px rgba(0, 255, 166, 0.4);
-        }
-
-        .current-email p {
-            font-size: 14px;
-            color: #FFFFFF;
-        }
-
-        .current-email span {
-            color: #00FFA6;
-            text-shadow: 0 0 5px rgba(0, 255, 166, 0.5);
-        }
-
-        .actions {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            justify-items: center;
-        }
-
-        button {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            padding: 10px;
-            border-radius: 15px;
-            color: #FFFFFF;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 10px rgba(0, 255, 166, 0.2);
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        button:hover {
-            background: #00FFA6;
-            color: #1A1A1A;
-            box-shadow: 0 0 20px rgba(0, 255, 166, 0.5);
-            transform: scale(1.05);
-        }
-
-        .email {
-            color: #00FFA6;
-            font-size: 12px;
-            margin: 5px 0;
-            text-shadow: 0 0 5px rgba(0, 255, 166, 0.5);
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        input, textarea {
-            background: rgba(255, 255, 255, 0.05);
-            border: none;
-            padding: 8px;
-            border-radius: 10px;
-            color: #FFFFFF;
-            font-size: 12px;
-            outline: none;
+        .custom-button {
+            background-image: linear-gradient(to right, #2563eb, #3b82f6, #60a5fa);
+            box-shadow: 0 4px 14px 0 rgba(0, 118, 255, 0.39);
             transition: all 0.3s ease;
         }
-
-        input:focus, textarea:focus {
-            background: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 10px rgba(0, 255, 166, 0.5);
+        .custom-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px 0 rgba(0, 118, 255, 0.4);
         }
-
-        textarea {
-            resize: none;
-            height: 80px;
-        }
-
-        .email-item {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 8px;
-            border-radius: 10px;
-            margin: 8px 0;
-            transition: transform 0.3s ease;
-        }
-
-        .email-item:hover {
-            transform: translateX(5px);
-        }
-
-        .email-item p {
-            font-size: 12px;
-            color: #00FFA6;
-            text-shadow: 0 0 5px rgba(0, 255, 166, 0.5);
-        }
-
-        .update-item {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 8px;
-            border-radius: 10px;
-            margin: 8px 0;
-            transition: transform 0.3s ease;
-        }
-
-        .update-item:hover {
-            transform: translateX(5px);
-        }
-
-        .update-item h3 {
-            font-size: 14px;
-            color: #FFFFFF;
-        }
-
-        .update-item p {
-            font-size: 12px;
-            color: #00FFA6;
-            text-shadow: 0 0 5px rgba(0, 255, 166, 0.5);
-        }
-
-        .profile-content {
-            display: flex;
-            gap: 15px;
-        }
-
-        .profile-left, .profile-right {
-            flex: 1;
-        }
-
-        .profile-left h2, .profile-right h2 {
-            font-size: 16px;
-            font-weight: 500;
-            color: #FFFFFF;
-            margin-bottom: 8px;
-        }
-
-        .subscription-status {
-            font-size: 14px;
-            color: #FFFFFF;
-            margin-top: 15px;
-        }
-
-        .subscription-status span {
-            color: #FF5555;
-            text-shadow: 0 0 5px rgba(255, 85, 85, 0.5);
-        }
-
-        .stats {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        #three-canvas {
-            width: 80px;
-            height: 80px;
-        }
-
-        .bars {
-            display: flex;
-            gap: 8px;
-        }
-
-        .bar {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .bar-fill {
-            width: 15px;
-            background: #00FFA6;
-            border-radius: 8px 8px 0 0;
-            box-shadow: 0 0 8px rgba(0, 255, 166, 0.5);
-            transition: height 1s ease-in-out;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .bar-fill::before {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, rgba(255, 255, 255, 0.2) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.2) 75%, transparent 75%, transparent);
-            background-size: 20px 20px;
-            animation: move 2s linear infinite;
-        }
-
-        .bar p {
-            font-size: 12px;
-            font-weight: 700;
-            color: #00FFA6;
-            text-shadow: 0 0 5px rgba(0, 255, 166, 0.5);
-            margin-top: 5px;
-        }
-
-        .progress-bar {
-            width: 150px;
-            height: 15px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: #00FFA6;
-            box-shadow: 0 0 8px rgba(0, 255, 166, 0.5);
-            transition: width 1s ease-in-out;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .progress-fill::before {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, rgba(255, 255, 255, 0.2) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.2) 75%, transparent 75%, transparent);
-            background-size: 20px 20px;
-            animation: move 2s linear infinite;
-        }
-
-        .settings {
-            margin-top: 15px;
-        }
-
-        .settings label {
-            font-size: 14px;
-            color: #FFFFFF;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .settings input[type="checkbox"] {
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .settings input[type="checkbox"]:checked {
-            background: #00FFA6;
-        }
-
-        .settings input[type="checkbox"]:checked::after {
-            content: '\f00c';
-            font-family: 'Font Awesome 5 Free';
-            font-weight: 900;
-            color: #1A1A1A;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 10px rgba(0, 255, 166, 0.5); }
-            50% { box-shadow: 0 0 20px rgba(0, 255, 166, 0.8); }
-            100% { box-shadow: 0 0 10px rgba(0, 255, 166, 0.5); }
-        }
-
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        @keyframes move {
-            from { background-position: 0 0; }
-            to { background-position: 20px 20px; }
-        }
-
-        @keyframes glow {
-            0% { text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
-            50% { text-shadow: 0 0 20px rgba(255, 255, 255, 0.8); }
-            100% { text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
-        }
-
-        button, .bar-fill, .progress-fill, .tab {
-            animation: pulse 2s infinite;
-        }
-
-        .email, .email-item, .update-item {
-            animation: slideIn 0.5s ease-in-out;
-        }
-
-        canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: -1;
-            opacity: 0.3;
+        .custom-button:disabled {
+             background-image: none;
+             background-color: #4b5563;
+             box-shadow: none;
         }
     </style>
 </head>
-<body>
-    <canvas id="particles"></canvas>
-    <div class="app-container">
-        <h1 class="header" id="app-header">AMOLED | ANONMAIL | @USERNAME</h1>
-        <div class="content">
-            <!-- Вкладка "Обновления" -->
-            <div id="updates-tab" class="screen active">
-                <div class="glass-card">
-                    <h2>Обновления</h2>
-                    <div id="updates-list"></div>
-                </div>
-            </div>
+<body class="bg-gray-950 text-gray-100 flex items-center justify-center min-h-screen p-4">
 
-            <!-- Вкладка "Управление почтой" -->
-            <div id="email-tab" class="screen">
-                <div class="glass-card">
-                    <div class="current-email">
-                        <p>Текущая почта: <span id="current-email"></span></p>
-                    </div>
-                    <div class="actions">
-                        <button onclick="newEmail()"><i class="fas fa-plus"></i> Новая почта</button>
-                        <button onclick="deleteEmail()"><i class="fas fa-trash"></i> Удалить</button>
-                        <button onclick="showSendEmailForm()"><i class="fas fa-paper-plane"></i> Отправить</button>
-                        <button onclick="checkInbox()"><i class="fas fa-inbox"></i> Входящие</button>
-                    </div>
-                </div>
-                <div id="send-email-form" class="glass-card" style="display: none;">
-                    <form onsubmit="sendEmail(event)">
-                        <input type="email" id="email-to" placeholder="Кому (to@example.com)" required>
-                        <input type="text" id="email-subject" placeholder="Тема" required>
-                        <textarea id="email-body" placeholder="Текст письма" required></textarea>
-                        <button type="submit"><i class="fas fa-paper-plane"></i> Отправить</button>
-                    </form>
-                </div>
-                <div id="inbox" class="glass-card" style="display: none;">
-                    <h2>Входящие:</h2>
-                    <div id="inbox-list"></div>
-                </div>
-            </div>
-
-            <!-- Вкладка "Профиль" -->
-            <div id="profile-tab" class="screen">
-                <div class="glass-card profile-content">
-                    <div class="profile-left">
-                        <h2>Последние почты:</h2>
-                        <div id="last-emails" class="email-list"></div>
-                        <p class="subscription-status">Платная подписка: <span>нет</span></p>
-                    </div>
-                    <div class="profile-right">
-                        <h2>Статистика:</h2>
-                        <div class="stats">
-                            <canvas id="three-canvas"></canvas>
-                            <div class="bars">
-                                <div class="bar">
-                                    <div id="bar-sent" class="bar-fill"></div>
-                                    <p id="emails-sent">***0***</p>
-                                </div>
-                                <div class="bar">
-                                    <div id="bar-created" class="bar-fill"></div>
-                                    <p id="emails-created-bar">***0***</p>
-                                </div>
-                            </div>
-                        </div>
-                        <h2>Активность:</h2>
-                        <div class="progress-bar">
-                            <div id="progress-fill" class="progress-fill"></div>
-                        </div>
-                        <div class="settings">
-                            <label>
-                                <input type="checkbox" id="notify-toggle" onchange="updateNotify()">
-                                Уведомления
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div class="w-full max-w-4xl mx-auto bg-gray-900 rounded-3xl shadow-2xl p-6 md:p-10 flex flex-col gap-8">
+        <div class="text-center">
+            <h1 class="text-4xl font-extrabold text-white mb-2">AI Фоторедактор</h1>
+            <p class="text-gray-400 text-lg">Превратите ваши идеи в реальность. Просто опишите, что нужно сделать.</p>
         </div>
 
-        <div class="tabs">
-            <button class="tab active" onclick="showTab('updates-tab')"><i class="fas fa-bullhorn"></i></button>
-            <button class="tab" onclick="showTab('email-tab')"><i class="fas fa-envelope"></i></button>
-            <button class="tab" onclick="showTab('profile-tab')"><i class="fas fa-user"></i></button>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+            <div class="flex flex-col gap-6">
+                <div>
+                    <label class="block text-xl font-semibold text-gray-300 mb-3">1. Загрузите фото</label>
+                    <div id="uploadContainer" class="upload-container rounded-xl p-8 text-center cursor-pointer hover:bg-gray-800 transition">
+                        <input type="file" id="imageUpload" class="hidden" accept="image/*">
+                        <svg class="mx-auto h-16 w-16 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                        </svg>
+                        <p id="uploadText" class="mt-4 text-base text-gray-400">
+                            <span class="font-bold text-blue-400">Нажмите для загрузки</span> или перетащите файл
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex-grow flex flex-col">
+                    <label for="prompt" class="block text-xl font-semibold text-gray-300 mb-3">2. Опишите изменения</label>
+                    <textarea id="prompt" rows="4" class="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-600 transition" placeholder="Например: 'Добавь на фон Porsche 911' или 'Сделай фото в стиле аниме'"></textarea>
+                    <div class="mt-4 flex flex-wrap gap-2">
+                        <button class="prompt-example text-sm bg-gray-800 hover:bg-gray-700 text-gray-300 py-2 px-4 rounded-full transition">Сделать зиму</button>
+                        <button class="prompt-example text-sm bg-gray-800 hover:bg-gray-700 text-gray-300 py-2 px-4 rounded-full transition">Porsche 911 на фон</button>
+                        <button class="prompt-example text-sm bg-gray-800 hover:bg-gray-700 text-gray-300 py-2 px-4 rounded-full transition">Стиль киберпанк</button>
+                    </div>
+                </div>
+                
+                <div>
+                     <button id="generateButton" class="w-full custom-button text-white font-bold py-4 px-8 rounded-xl disabled:bg-gray-600 disabled:cursor-not-allowed transition-all duration-300 transform shadow-lg">
+                        Сгенерировать
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-6">
+                <div>
+                    <h3 class="font-semibold text-xl mb-3 text-center text-gray-400">Оригинал</h3>
+                    <div class="aspect-square bg-gray-800 rounded-2xl flex items-center justify-center p-4">
+                        <img id="originalImage" src="" alt="Оригинальное изображение" class="rounded-xl shadow-lg w-full h-full object-contain hidden">
+                        <p id="originalPlaceholder" class="text-gray-500">Здесь появится ваше фото</p>
+                    </div>
+                </div>
+                <div class="relative">
+                    <h3 class="font-semibold text-xl mb-3 text-center text-gray-400">Результат</h3>
+                     <div class="aspect-square bg-gray-800 rounded-2xl flex items-center justify-center relative p-4">
+                        <img id="generatedImage" src="" alt="Сгенерированное изображение" class="rounded-xl shadow-lg w-full h-full object-contain hidden">
+                        <div id="loaderContainer" class="absolute inset-0 bg-black bg-opacity-70 flex-col items-center justify-center rounded-2xl hidden">
+                            <div class="loader"></div>
+                            <p class="text-white mt-4 font-medium">Магия в процессе...</p>
+                        </div>
+                        <p id="generatedPlaceholder" class="text-gray-500 text-center px-4">Здесь будет результат вашей магии</p>
+                    </div>
+                    <a id="downloadButton" href="#" download="edited-image.png" class="absolute -bottom-10 left-1/2 -translate-x-1/2 bg-green-600 text-white font-bold py-3 px-8 rounded-full hover:bg-green-700 transition-all duration-300 transform hover:scale-105 shadow-lg hidden whitespace-nowrap">
+                        Скачать результат
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
     <script>
-        // Инициализация частиц на фоне
-        particlesJS('particles', {
-            particles: {
-                number: { value: 50, density: { enable: true, value_area: 800 } },
-                color: { value: '#00FFA6' },
-                shape: { type: 'circle' },
-                opacity: { value: 0.5, random: true },
-                size: { value: 3, random: true },
-                line_linked: { enable: false },
-                move: { enable: true, speed: 1, direction: 'top', random: true, out_mode: 'out' }
-            },
-            interactivity: {
-                detect_on: 'canvas',
-                events: { onhover: { enable: true, mode: 'repulse' }, onclick: { enable: true, mode: 'push' } },
-                modes: { repulse: { distance: 100, duration: 0.4 }, push: { particles_nb: 4 } }
-            },
-            retina_detect: true
+        // DOM Elements
+        const uploadContainer = document.getElementById('uploadContainer');
+        const imageUpload = document.getElementById('imageUpload');
+        const uploadText = document.getElementById('uploadText');
+        const promptInput = document.getElementById('prompt');
+        const generateButton = document.getElementById('generateButton');
+        const originalImage = document.getElementById('originalImage');
+        const generatedImage = document.getElementById('generatedImage');
+        const originalPlaceholder = document.getElementById('originalPlaceholder');
+        const generatedPlaceholder = document.getElementById('generatedPlaceholder');
+        const loaderContainer = document.getElementById('loaderContainer');
+        const downloadButton = document.getElementById('downloadButton');
+        const promptExamples = document.querySelectorAll('.prompt-example');
+
+        let uploadedFile = null;
+        let originalBase64 = '';
+
+        // Event Listeners
+        uploadContainer.addEventListener('click', () => imageUpload.click());
+        imageUpload.addEventListener('change', (e) => handleFile(e.target.files[0]));
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadContainer.addEventListener(eventName, preventDefaults, false);
         });
 
-        // Инициализация Three.js
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('three-canvas'), alpha: true });
-        renderer.setSize(80, 80);
-
-        const geometry = new THREE.BoxGeometry();
-        const material = new THREE.MeshBasicMaterial({ color: 0x00FFA6, wireframe: true });
-        const cube = new THREE.Mesh(geometry, material);
-        scene.add(cube);
-
-        camera.position.z = 2;
-
-        function animate() {
-            requestAnimationFrame(animate);
-            cube.rotation.x += 0.01;
-            cube.rotation.y += 0.01;
-            renderer.render(scene, camera);
-        }
-        animate();
-
-        let telegramId = '12345';
-        let username = 'USERNAME';
-        let csrfToken = '';
-
-        // Инициализация Telegram Web App
-        if (window.Telegram?.WebApp) {
-            Telegram.WebApp.ready();
-            Telegram.WebApp.expand();
-            Telegram.WebApp.setHeaderColor('#1A1A1A');
-            telegramId = Telegram.WebApp.initDataUnsafe?.user?.id || '12345';
-            username = Telegram.WebApp.initDataUnsafe?.user?.username || 'Unknown';
-            document.getElementById('app-header').textContent = `AMOLED | ANONMAIL | @${username}`;
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
         }
 
-        // Получение CSRF-токена
-        async function getCsrfToken() {
-            try {
-                const response = await fetch('http://localhost:3000/csrf-token', {
-                    credentials: 'include'
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadContainer.addEventListener(eventName, () => uploadContainer.classList.add('drag-over'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadContainer.addEventListener(eventName, () => uploadContainer.classList.remove('drag-over'), false);
+        });
+
+        uploadContainer.addEventListener('drop', (e) => handleFile(e.dataTransfer.files[0]), false);
+        
+        generateButton.addEventListener('click', generateImage);
+
+        promptExamples.forEach(button => {
+            button.addEventListener('click', () => {
+                promptInput.value = button.textContent;
+            });
+        });
+
+        // Functions
+        function handleFile(file) {
+            if (!file || !file.type.startsWith('image/')) {
+                alert('Пожалуйста, выберите файл изображения.');
+                return;
+            }
+            uploadedFile = file;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                originalBase64 = e.target.result;
+                originalImage.src = originalBase64;
+                originalImage.classList.remove('hidden');
+                originalPlaceholder.classList.add('hidden');
+                uploadText.innerHTML = `<span class="font-semibold text-green-400">Файл:</span> ${file.name}`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function generateImage() {
+            if (!uploadedFile) {
+                alert('Пожалуйста, сначала загрузите изображение!');
+                return;
+            }
+            if (!promptInput.value.trim()) {
+                alert('Пожалуйста, опишите, что вы хотите изменить.');
+                return;
+            }
+
+            // UI updates for loading state
+            loaderContainer.classList.remove('hidden');
+            loaderContainer.classList.add('flex');
+            generatedImage.classList.add('hidden');
+            generatedPlaceholder.classList.add('hidden');
+            downloadButton.classList.add('hidden');
+            generateButton.disabled = true;
+
+            const base64Data = originalBase64.split(',')[1];
+            const userPrompt = promptInput.value;
+            
+            // API call with retry logic
+            const maxRetries = 3;
+            for (let attempt = 1; attempt <= maxRetries; attempt++) {
+                try {
+                    // YOUR API KEY HERE
+                    const apiKey = ""; 
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${apiKey}`;
+
+                    const payload = {
+                        contents: [{
+                            parts: [
+                                { text: userPrompt },
+                                { inlineData: { mimeType: uploadedFile.type, data: base64Data } }
+                            ]
+                        }],
+                        generationConfig: { responseModalities: ['IMAGE'] },
+                    };
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+                    const result = await response.json();
+                    const generatedBase64 = result?.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
+
+                    if (generatedBase64) {
+                        const imageUrl = `data:image/png;base64,${generatedBase64}`;
+                        generatedImage.src = imageUrl;
+                        generatedImage.classList.remove('hidden');
+                        downloadButton.href = imageUrl;
+                        downloadButton.classList.remove('hidden');
+                        break; // Success, exit loop
+                    } else {
+                        throw new Error("Не удалось получить изображение из ответа API.");
+                    }
+
+                } catch (error) {
+                    console.error(`Attempt ${attempt} failed:`, error);
+                    if (attempt === maxRetries) {
+                        alert('Не удалось сгенерировать изображение. Попробуйте другой запрос или фото.');
+                        generatedPlaceholder.classList.remove('hidden');
+                        generatedPlaceholder.innerText = "Ошибка генерации :(";
+                    } else {
+                         await new Promise(res => setTimeout(res, 1000 * attempt)); // Wait before retrying
+                    }
+                }
+            }
+            
+            // UI updates post-generation
+            loaderContainer.classList.add('hidden');
+            loaderContainer.classList.remove('flex');
+            generateButton.disabled = false;
+        }
+
+        // Initialize with user's last uploaded image if available
+        const initialImageSrc = 'uploaded:image.png-391ce19a-53dc-4a3f-959b-0d1aa14b0ce9';
+         if (initialImageSrc && initialImageSrc.startsWith('uploaded:')) {
+            fetch(initialImageSrc)
+                .then(res => res.blob())
+                .then(blob => {
+                    if(blob.type.startsWith('image/')) {
+                         const file = new File([blob], "uploaded_image.png", { type: blob.type });
+                        handleFile(file);
+                    }
                 });
-                const data = await response.json();
-                csrfToken = data.csrfToken;
-            } catch (error) {
-                console.error('Ошибка получения CSRF-токена:', error);
-            }
         }
-
-        // Переключение вкладок
-        function showTab(tabId) {
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
-            document.querySelector(`button[onclick="showTab('${tabId}')"]`).classList.add('active');
-            document.getElementById(tabId).classList.add('active');
-            if (tabId === 'updates-tab') loadUpdates();
-            if (tabId === 'email-tab') loadEmailData();
-            if (tabId === 'profile-tab') loadProfileData();
-        }
-
-        // Загрузка данных пользователя
-        async function loadUserData() {
-            try {
-                const response = await fetch(`http://localhost:3000/user/${telegramId}`);
-                const data = await response.json();
-                console.log('Данные пользователя:', data);
-                return data;
-            } catch (error) {
-                console.error('Ошибка загрузки данных пользователя:', error);
-                return { username: 'Unknown', currentEmail: null, emailsCreated: 0, emailsSent: 0, lastEmails: [], notify: false };
-            }
-        }
-
-        // Загрузка обновлений
-        async function loadUpdates() {
-            try {
-                const response = await fetch(`http://localhost:3000/updates`);
-                const updates = await response.json();
-                const updatesList = document.getElementById('updates-list');
-                updatesList.innerHTML = updates.map(update => `
-                    <div class="update-item">
-                        <h3>${update.title}</h3>
-                        <p>${update.content}</p>
-                    </div>
-                `).join('');
-            } catch (error) {
-                console.error('Ошибка загрузки обновлений:', error);
-            }
-        }
-
-        // Загрузка данных почты
-        async function loadEmailData() {
-            const user = await loadUserData();
-            document.getElementById('current-email').textContent = user.currentEmail || 'Нет активной почты';
-        }
-
-        // Создание новой почты
-        async function newEmail() {
-            try {
-                const response = await fetch(`http://localhost:3000/user/${telegramId}/new-email`, {
-                    method: 'POST',
-                    headers: { 'CSRF-Token': csrfToken }
-                });
-                const data = await response.json();
-                console.log('Новая почта:', data);
-                document.getElementById('current-email').textContent = data.email;
-                await fetch(`http://localhost:3000/notify/${telegramId}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'CSRF-Token': csrfToken },
-                    body: JSON.stringify({ message: `✨ Новая почта создана: ${data.email}` })
-                });
-            } catch (error) {
-                console.error('Ошибка создания новой почты:', error);
-            }
-        }
-
-        // Удаление почты
-        async function deleteEmail() {
-            try {
-                await fetch(`http://localhost:3000/user/${telegramId}/delete-email`, {
-                    method: 'POST',
-                    headers: { 'CSRF-Token': csrfToken }
-                });
-                document.getElementById('current-email').textContent = 'Нет активной почты';
-                await fetch(`http://localhost:3000/notify/${telegramId}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'CSRF-Token': csrfToken },
-                    body: JSON.stringify({ message: '🗑 Почта удалена.' })
-                });
-            } catch (error) {
-                console.error('Ошибка удаления почты:', error);
-            }
-        }
-
-        // Показ формы отправки письма
-        function showSendEmailForm() {
-            document.getElementById('send-email-form').style.display = 'block';
-            document.getElementById('inbox').style.display = 'none';
-        }
-
-        // Отправка письма
-        async function sendEmail(event) {
-            event.preventDefault();
-            try {
-                const to = document.getElementById('email-to').value;
-                const subject = document.getElementById('email-subject').value;
-                const body = document.getElementById('email-body').value;
-                await fetch(`http://localhost:3000/user/${telegramId}/send-email`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'CSRF-Token': csrfToken },
-                    body: JSON.stringify({ to, subject, body })
-                });
-                document.getElementById('send-email-form').style.display = 'none';
-                await fetch(`http://localhost:3000/notify/${telegramId}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'CSRF-Token': csrfToken },
-                    body: JSON.stringify({ message: `✉️ Письмо отправлено на ${to}` })
-                });
-            } catch (error) {
-                console.error('Ошибка отправки письма:', error);
-            }
-        }
-
-        // Проверка входящих
-        async function checkInbox() {
-            try {
-                const response = await fetch(`http://localhost:3000/user/${telegramId}/inbox`);
-                const inbox = await response.json();
-                const inboxList = document.getElementById('inbox-list');
-                inboxList.innerHTML = inbox.map(item => `
-                    <div class="email-item">
-                        <p>От: ${item.sender}</p>
-                        <p>Тема: ${item.subject}</p>
-                        <p>Текст: ${item.body}</p>
-                    </div>
-                `).join('');
-                document.getElementById('inbox').style.display = 'block';
-                document.getElementById('send-email-form').style.display = 'none';
-            } catch (error) {
-                console.error('Ошибка проверки входящих:', error);
-            }
-        }
-
-        // Загрузка профиля
-        async function loadProfileData() {
-            try {
-                const user = await loadUserData();
-                document.getElementById('last-emails').innerHTML = (user.lastEmails || []).map(email => `
-                    <p class="email">${email}</p>
-                `).join('');
-                document.getElementById('emails-sent').textContent = `***${user.emailsSent || 0}***`;
-                document.getElementById('emails-created-bar').textContent = `***${user.emailsCreated || 0}***`;
-                document.getElementById('bar-sent').style.height = `${Math.min((user.emailsSent || 0) * 10, 100)}%`;
-                document.getElementById('bar-created').style.height = `${Math.min((user.emailsCreated || 0) * 10, 100)}%`;
-                document.getElementById('progress-fill').style.width = `${Math.min((user.emailsSent || 0) + (user.emailsCreated || 0), 100)}%`;
-                document.getElementById('notify-toggle').checked = user.notify;
-            } catch (error) {
-                console.error('Ошибка загрузки профиля:', error);
-            }
-        }
-
-        // Обновление настроек уведомлений
-        async function updateNotify() {
-            try {
-                const notify = document.getElementById('notify-toggle').checked;
-                await fetch(`http://localhost:3000/user/${telegramId}/update-notify`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'CSRF-Token': csrfToken },
-                    body: JSON.stringify({ notify })
-                });
-            } catch (error) {
-                console.error('Ошибка обновления настроек уведомлений:', error);
-            }
-        }
-
-        // Инициализация
-        getCsrfToken();
-        loadUpdates();
     </script>
 </body>
 </html>
